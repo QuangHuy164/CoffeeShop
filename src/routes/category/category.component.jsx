@@ -4,12 +4,16 @@ import { useParams } from 'react-router-dom';
 import ProductCard from '../../components/product-card/product-card.component';
 
 import { CategoriesContext } from '../../contexts/categories.context';
-
+import Spinner from '../../components/spinner/spinner.component';
 import { CategoryContainer, Title } from './category.styles';
+import { useQuery } from '@apollo/client';
 
 const Category = () => {
   const { category } = useParams();
-  const { categoriesMap } = useContext(CategoriesContext);
+  const {loading, error, data} = useQuery(GET_CATEGORY, {
+    variables: { title: category},
+    
+  })
   const [products, setProducts] = useState(categoriesMap[category]);
 
   useEffect(() => {
@@ -18,6 +22,10 @@ const Category = () => {
 
   return (
     <Fragment>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Fragment>
       <Title>{category.toUpperCase()}</Title>
       <CategoryContainer>
         {products &&
@@ -25,8 +33,9 @@ const Category = () => {
             <ProductCard key={product.id} product={product} />
           ))}
       </CategoryContainer>
-    </Fragment>
+      </Fragment>
+      )};
+</Fragment>
   );
 };
-
 export default Category;
